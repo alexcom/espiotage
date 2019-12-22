@@ -1,3 +1,6 @@
+local CLK_PIN = 5
+local DIO_PIN = 6
+local TZ_OFFSET = 2*60*60
 local display = require('tm1637')
 local sntp = require('sntp')
 local rtctime = require('rtctime')
@@ -11,7 +14,7 @@ local timeServers = {
 
 function initDisplay()
     print('initializing display')
-    display.init(5, 6)
+    display.init(CLK_PIN, DIO_PIN)
     display.set_brightness(3)
     display.write_string('12.34')
 end
@@ -21,10 +24,10 @@ function updateDisplay()
     local epochTime = rtctime.get()
     print('epoch time ' .. epochTime)
     if epochTime == 0 then return end
-    local calTime = rtctime.epoch2cal(epochTime)
+    local calTime = rtctime.epoch2cal(epochTime+TZ_OFFSET)
     hour, minute = calTime['hour'], calTime['min']
     print(hour .. ' ' .. minute)
-    local timeStr = string.format('%d%s%d', hour, ticker and '.' or '', minute)
+    local timeStr = string.format('%02d%s%02d', hour, ticker and '.' or '', minute)
     display.write_string(timeStr)
     ticker = not ticker
 end
@@ -38,6 +41,7 @@ function updateTime()
     print('updating time')
     if networkEnabled then
         print('syncing time with server')
+        sntp.setoffset(TZ_OFFSET)
         sntp.sync(timeServers, function() print('ntp sync success') end,
                   function(errType, details)
             print('ntp sync failed:', ntpErrors[errType], details)
