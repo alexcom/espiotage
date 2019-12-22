@@ -30,10 +30,8 @@ function updateDisplay()
 end
 
 local ntpErrors = {
-    e1 = 'DNS lookup failed',
-    e2 = 'Memory allocation failure',
-    e3 = 'UDP send failed',
-    e4 = 'Timeout, no NTP response received'
+    'DNS lookup failed', 'Memory allocation failure', 'UDP send failed',
+    'Timeout, no NTP response received'
 }
 
 function updateTime()
@@ -42,7 +40,7 @@ function updateTime()
         print('syncing time with server')
         sntp.sync(timeServers, function() print('ntp sync success') end,
                   function(errType, details)
-            print('ntp sync failed:', ntpErrors['e' .. errType], details)
+            print('ntp sync failed:', ntpErrors[errType], details)
         end)
     end
 end

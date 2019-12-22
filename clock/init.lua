@@ -27,9 +27,9 @@ function setupWiFi()
     if not ok then print("invalid configuration") end
 end
 
-function init() 
-setupWiFi()
-clock.start()
+function init()
+    setupWiFi()
+    clock.start()
 end
 
 init()
